@@ -13,6 +13,9 @@ class ReplyURL(BaseModel):
     short_url: str
 
 
+memory_db = {}
+
+
 @app.post("/shorten-url/", response_model=ReplyURL)
 def shorten_url(long_url: InputURL):
     pass
