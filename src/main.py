@@ -1,6 +1,7 @@
 from random import choice
 import string
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 
@@ -27,7 +28,7 @@ def random_path():
     return random_string
 
 
-@app.post("/shorten-url/")
+@app.post("/shorten-url/", response_model=ReplyURL)
 def shorten_url(url: InputURL, request: Request):
     path = random_path()
     memory_db[path] = url.long_url
@@ -38,4 +39,4 @@ def shorten_url(url: InputURL, request: Request):
 
 @app.get("/{path}")
 def access_short_url(path: str):
-    pass
+    return RedirectResponse(memory_db[path])
