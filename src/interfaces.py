@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Optional
 
 
 class IURLRepository(ABC):
     @abstractmethod
-    def create_short_url(self, long_url: str, url_path: str) -> str:
+    def create_short_url(self, long_url: str, url_path: str) -> Optional[str]:
         pass
 
     @abstractmethod

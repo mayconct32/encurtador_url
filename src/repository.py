@@ -3,18 +3,27 @@ from datetime import datetime
 
 
 class CassandraDBURLRepository(IURLRepository):
-    def __init__(self, db_connection: IDBConnection):
+    def __init__(self, db_connection: IDBConnection) -> None:
         self._db_connection = db_connection
 
+    def _get_existing_short_url(self, url_path: str) -> str:
+        response = self._db_connection.execute(
+            """SELECT shortcode FROM url WHERE shortcode=%s;""",
+            (url_path,)
+        )
+        row = response.one()
+        return row.shortcode if row else None
+    
     def create_short_url(self, long_url: str, url_path: str) -> str:
         response = self._db_connection.execute(
-            """
-                INSERT INTO url(shortcode, long_url, created_at) 
-                VALUES (%s, %s, %s);
-            """, (url_path, long_url, datetime.now())
+            """INSERT INTO url(shortcode, long_url, created_at) 
+               VALUES (%s, %s, %s) IF NOT EXISTS;""",
+            (url_path, long_url, datetime.now())
         )
-        return response
-
+        if not response.one().applied:
+            return self._get_existing_short_url(url_path)
+        return url_path
+    
     def get_long_url(self, url_path: str) -> str:
         response = self._db_connection.execute(
             """
@@ -25,6 +34,7 @@ class CassandraDBURLRepository(IURLRepository):
         return response.one()
 
 
+# test repository
 if __name__ == "__main__":
     from db_connection import CassandraDBConnection
 
@@ -39,7 +49,7 @@ if __name__ == "__main__":
 
     # print(url_repository.create_short_url(
     #     long_url="https://www.youtube.com",
-    #     url_path="testtest"
+    #     url_path="testtfedst"
     # ))
 
     print(url_repository.get_long_url("testtest"))
