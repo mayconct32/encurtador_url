@@ -1,8 +1,9 @@
 from typing import Any
 from cassandra.cluster import Cluster
+from interfaces import IDBConnection
 
 
-class CassandraDBConnection():
+class CassandraDBConnection(IDBConnection):
     def __init__(self, hosts: list, port: int, keyspace: str) -> None:
         self._cluster = Cluster(hosts, port=port)
         self._session = self._cluster.connect(keyspace)
