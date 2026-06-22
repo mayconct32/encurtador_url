@@ -1,4 +1,5 @@
 from interfaces import IURLRepository, IDBConnection
+from datetime import datetime
 
 
 class CassandraDBURLRepository(IURLRepository):
@@ -6,8 +7,29 @@ class CassandraDBURLRepository(IURLRepository):
         self._db_connection = db_connection
 
     def create_short_url(self, long_url: str, url_path: str) -> str:
-        pass
+        response = self._db_connection.execute(
+            """
+                INSERT INTO url(shortcode, long_url, created_at) 
+                VALUES (%s, %s, %s);
+            """, (url_path, long_url, datetime.now())
+        )
 
     def get_long_url(self, url_path: str) -> str:
         pass
 
+
+if __name__ == "__main__":
+    from db_connection import CassandraDBConnection
+
+
+    url_repository = CassandraDBURLRepository(
+        CassandraDBConnection(
+            hosts=['0.0.0.0'],
+            port=9042,
+            keyspace="urls"
+        )
+    )
+    url_repository.create_short_url(
+        long_url="https://www.youtube.com",
+        url_path="testtest"
+    )
