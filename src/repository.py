@@ -13,9 +13,16 @@ class CassandraDBURLRepository(IURLRepository):
                 VALUES (%s, %s, %s);
             """, (url_path, long_url, datetime.now())
         )
+        return response
 
     def get_long_url(self, url_path: str) -> str:
-        pass
+        response = self._db_connection.execute(
+            """
+                SELECT long_url FROM url 
+                WHERE shortcode=%s;
+            """, (url_path,)
+        )
+        return response.one()
 
 
 if __name__ == "__main__":
@@ -29,7 +36,10 @@ if __name__ == "__main__":
             keyspace="urls"
         )
     )
-    url_repository.create_short_url(
-        long_url="https://www.youtube.com",
-        url_path="testtest"
-    )
+
+    # print(url_repository.create_short_url(
+    #     long_url="https://www.youtube.com",
+    #     url_path="testtest"
+    # ))
+
+    print(url_repository.get_long_url("testtest"))
