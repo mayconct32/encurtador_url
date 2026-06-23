@@ -1,28 +1,24 @@
 from interfaces import IURLRepository, IDBConnection
-from datetime import datetime
 
 
 class CassandraDBURLRepository(IURLRepository):
     def __init__(self, db_connection: IDBConnection) -> None:
         self._db_connection = db_connection
 
-    def _get_existing_short_url(self, url_path: str) -> str:
+    def get_short_url(self, short_code: str) -> str:
         response = self._db_connection.execute(
             """SELECT shortcode FROM url WHERE shortcode=%s;""",
-            (url_path,)
+            (short_code,)
         )
-        row = response.one()
-        return row.shortcode if row else None
+        return response.one()
     
     def create_short_url(self, long_url: str, url_path: str) -> str:
         response = self._db_connection.execute(
             """INSERT INTO url(shortcode, long_url, created_at) 
-               VALUES (%s, %s, %s) IF NOT EXISTS;""",
-            (url_path, long_url, datetime.now())
+               VALUES (%s, %s, now()) IF NOT EXISTS;""",
+            (url_path, long_url)
         )
-        if not response.one().applied:
-            return self._get_existing_short_url(url_path)
-        return url_path
+        return response.one().applied
     
     def get_long_url(self, url_path: str) -> str:
         response = self._db_connection.execute(
