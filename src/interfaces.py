@@ -4,6 +4,10 @@ from typing import Any, Optional
 
 class IURLRepository(ABC):
     @abstractmethod
+    def get_short_url(self, short_code: str) -> str:
+        pass
+
+    @abstractmethod
     def create_short_url(self, long_url: str, url_path: str) -> Optional[str]:
         pass
 
