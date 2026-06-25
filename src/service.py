@@ -6,7 +6,6 @@ from interfaces import IURLRepository
 from exceptions import URLError
 
 
-
 load_dotenv()
 
 class URLService:
