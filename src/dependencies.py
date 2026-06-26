@@ -12,12 +12,12 @@ load_dotenv()
 
 @lru_cache(maxsize=1)
 def get_connection_db() -> IDBConnection:
-    hosts = os.getenv("HOSTS")
+    host = os.getenv("HOST")
     port = os.getenv("PORT")
     keyspace = os.getenv("KEYSPACE")
-    if not all([hosts, port, keyspace]):
+    if not all([host, port, keyspace]):
         raise ValueError("HOSTS, PORT, and KEYSPACE variables not found in .env")
-    return CassandraDBConnection(hosts, port, keyspace)  
+    return CassandraDBConnection([(host)], int(port), keyspace)  
 
 
 def get_url_repository(

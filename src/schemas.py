@@ -15,6 +15,7 @@ class RequestURL(BaseModel):
                 message = "Invalid URL",
                 status_code = HTTPStatus.UNPROCESSABLE_CONTENT
             )
+        return long_url
         
 
 class ResponseURL(BaseModel):
