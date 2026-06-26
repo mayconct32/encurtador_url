@@ -1,7 +1,6 @@
-from http import HTTPStatus
 from pydantic import BaseModel, field_validator
 import validators
-from exceptions import URLError
+from exceptions import InvalidURLError
 
 
 class RequestURL(BaseModel):
@@ -11,10 +10,7 @@ class RequestURL(BaseModel):
     @classmethod
     def validates_long_url(cls, long_url: str):
         if not validators.url(long_url):
-            raise URLError(
-                message = "Invalid URL",
-                status_code = HTTPStatus.UNPROCESSABLE_CONTENT
-            )
+            raise InvalidURLError()
         return long_url
         
 

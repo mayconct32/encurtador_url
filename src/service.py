@@ -1,9 +1,8 @@
-from http import HTTPStatus
 import os
 from cassandra.cluster import ResultSet
 from dotenv import load_dotenv
 from interfaces import IURLRepository
-from exceptions import URLError
+from exceptions import URLNotFoundError
 
 
 load_dotenv()
@@ -25,9 +24,6 @@ class URLService:
         response: ResultSet = self.url_repository.get_long_url(short_code)
         row = response.one()
         if not row:
-            raise URLError(
-                message="URL not found",
-                status_code=HTTPStatus.NOT_FOUND
-            )
+            raise URLNotFoundError()
         return row.long_url    
 
